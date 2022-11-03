@@ -231,9 +231,7 @@ void Edge_softmax_csr_forward(const aten::CSRMatrix& csr,
  * \brief Edge_softmax_csr backward function on Csr format.
  */
 template <int XPU, typename IdType, int bits>
-void Edge_softmax_csr_backward(const std::string& op,
-             const BcastOff& bcast,
-             const aten::CSRMatrix& csr,
+void Edge_softmax_csr_backward(const aten::CSRMatrix& csr,
              NDArray ufeat,
              NDArray efeat,
              NDArray out);

@@ -525,22 +525,23 @@ void Edge_softmax_csr_forward(const CSRMatrix& csr,
 
 /*!
  * \brief CPU kernel of Edge_softmax_csr_backward on Csr format.
- * \param bcast Broadcast information.
  * \param csr The Csr matrix.
  * \param out The result of forward.
  * \param sds The result of gradiet * out.
  * \param back_out The result of edge_softmax_backward.
  */
-template <typename IdType, typename DType, typename Op>
-void Edge_softmax_csr_backward(const BcastOff& bcast, const CSRMatrix& csr, NDArray out,
+template <typename IdType, typename DType>
+void Edge_softmax_csr_backward(const CSRMatrix& csr, NDArray out,
                 NDArray sds, NDArray back_out) {
   const bool has_idx = !IsNullArray(csr.data);
   const IdType* indptr = static_cast<IdType*>(csr.indptr->data);
   const IdType* edges =
     has_idx ? static_cast<IdType*>(csr.data->data) : nullptr;
-  const DType* W_out = Op::use_rhs ? static_cast<DType*>(out->data) : nullptr;
-  const DType* W_sds = Op::use_rhs ? static_cast<DType*>(sds->data) : nullptr;
-  const int64_t dim = bcast.out_len, rhs_dim = bcast.rhs_len;
+  const DType* W_out = static_cast<DType*>(out->data);
+  const DType* W_sds = static_cast<DType*>(sds->data);
+  int64_t dim = 1;
+  for (int i = 1; i < out->ndim; ++i) dim *= out->shape[i];
+
   runtime::parallel_for(0, csr.num_rows, [&](size_t b, size_t e) {
     for (auto rid = b; rid < e; ++rid) {
       const IdType row_start = indptr[rid], row_end = indptr[rid + 1];
@@ -548,19 +549,16 @@ void Edge_softmax_csr_backward(const BcastOff& bcast, const CSRMatrix& csr, NDAr
         DType sum_sds = 0;
         for (IdType j = row_start; j < row_end; ++j) {
           const IdType eid = has_idx ? edges[j] : j;
-          const int64_t rhs_add = bcast.use_bcast ? bcast.rhs_offset[k] : k;
-          const DType* rhs_off_sds =
-            Op::use_rhs ? W_sds + eid * rhs_dim + rhs_add : nullptr;
+          const int64_t rhs_add = k;
+          const DType* rhs_off_sds = W_sds + eid * dim + rhs_add;
           sum_sds += (*rhs_off_sds);
         }
         for (IdType j = row_start; j< row_end; ++j) {
           const IdType eid = has_idx ? edges[j] : j;
-          const int64_t rhs_add = bcast.use_bcast ? bcast.rhs_offset[k] : k;
-          const DType* rhs_off_out =
-            Op::use_rhs ? W_out + eid * rhs_dim + rhs_add : nullptr;
-          const DType* rhs_off_sds =
-            Op::use_rhs ? W_sds + eid * rhs_dim + rhs_add : nullptr;
-          back_out.Ptr<DType>()[eid*rhs_dim+rhs_add] =  (*rhs_off_sds) - sum_sds*(*rhs_off_out);
+          const int64_t rhs_add = k;
+          const DType* rhs_off_out = W_out + eid * dim + rhs_add;
+          const DType* rhs_off_sds = W_sds + eid * dim + rhs_add;
+          back_out.Ptr<DType>()[eid*dim+rhs_add] =  (*rhs_off_sds) - sum_sds*(*rhs_off_out);
         }
       }
     }
