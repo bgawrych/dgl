@@ -224,10 +224,7 @@ std::pair<CSRMatrix, NDArray> CSRSum(
  * \brief Edge_softmax_csr forward function on Csr format.
  */
 template <int XPU, typename IdType, int bits>
-void Edge_softmax_csr_forward(const std::string& op,
-             const BcastOff& bcast,
-             const aten::CSRMatrix& csr,
-             NDArray ufeat,
+void Edge_softmax_csr_forward(const aten::CSRMatrix& csr,
              NDArray efeat,
              NDArray out);
 /*!

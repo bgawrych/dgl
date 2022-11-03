@@ -121,15 +121,13 @@ def _edge_softmax_backward(gidx, out, sds):
     return back_out
 
 
-def _edge_softmax_forward(gidx, e, op):
+def _edge_softmax_forward(gidx, e):
     r"""Edge_softmax forward interface.
 
     Parameters
     ----------
     gidx : HeteroGraphIndex
         The input graph index.
-    op : str
-        The binary op's name, default as ``copy_rhs``.
     e : tensor or None
         The feature on edges.
 
@@ -148,7 +146,7 @@ def _edge_softmax_forward(gidx, e, op):
         expand = False
     myout = F.zeros_like(e)
     _CAPI_DGLKernelEdge_softmax_forward(
-        gidx, op, to_dgl_nd(None), to_dgl_nd(e), to_dgl_nd_for_write(myout)
+        gidx, to_dgl_nd(e), to_dgl_nd_for_write(myout)
     )
     myout = F.squeeze(myout, -1) if expand else myout
     return myout

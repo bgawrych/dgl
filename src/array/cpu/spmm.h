@@ -477,21 +477,22 @@ void SpMMCmpCoo(const BcastOff& bcast, const COOMatrix& coo, NDArray ufeat,
 
 /*!
  * \brief CPU kernel of Edge_softmax_csr_forward on Csr format.
- * \param bcast Broadcast information.
  * \param csr The Csr matrix.
- * \param ufeat The feature on source nodes.
  * \param efeat The feature on edges.
  * \param out The result of edge_softmax_forward.
  */
-template <typename IdType, typename DType, typename Op>
-void Edge_softmax_csr_forward(const BcastOff& bcast, const CSRMatrix& csr, NDArray ufeat,
+template <typename IdType, typename DType>
+void Edge_softmax_csr_forward(const CSRMatrix& csr,
                 NDArray efeat, NDArray out) {
   const bool has_idx = !IsNullArray(csr.data);
   const IdType* indptr = static_cast<IdType*>(csr.indptr->data);
   const IdType* edges =
     has_idx ? static_cast<IdType*>(csr.data->data) : nullptr;
-  const DType* W = Op::use_rhs ? static_cast<DType*>(efeat->data) : nullptr;
-  const int64_t dim = bcast.out_len, rhs_dim = bcast.rhs_len;
+  const DType* W = static_cast<DType*>(efeat->data);
+
+  int64_t dim = 1;
+  for (int i = 1; i < efeat->ndim; ++i) dim *= efeat->shape[i];
+
   runtime::parallel_for(0, csr.num_rows, [&](size_t b, size_t e) {
     for (auto rid = b; rid < e; ++rid) {
       const IdType row_start = indptr[rid], row_end = indptr[rid + 1];
@@ -501,11 +502,10 @@ void Edge_softmax_csr_forward(const BcastOff& bcast, const CSRMatrix& csr, NDArr
         DType max_v = -std::numeric_limits<DType>::infinity();
         for (IdType j = row_start; j < row_end; ++j) {
           const IdType eid = has_idx ? edges[j] : j;
-          const int64_t rhs_add = bcast.use_bcast ? bcast.rhs_offset[k] : k;
-          const DType* rhs_off =
-            Op::use_rhs ? W + eid * rhs_dim + rhs_add : nullptr;
+          const int64_t rhs_add = k;
+          const DType* rhs_off = W + eid * dim + rhs_add;
           data_e[j-row_start] = *rhs_off;
-          num[j-row_start] = eid*rhs_dim+rhs_add;
+          num[j-row_start] = eid*dim+rhs_add;
           max_v = std::max<DType>(max_v, (*rhs_off));
         }
         DType exp_sum = 0;

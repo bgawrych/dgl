@@ -323,19 +323,15 @@ void SDDMMHetero(const std::string& op,
 
 
 /*! \brief Generalized Edge_softmax op for forward */
-void Edge_softmax_forward(const std::string& op,
-          HeteroGraphPtr graph,
-          NDArray ufeat,
+void Edge_softmax_forward(HeteroGraphPtr graph,
           NDArray efeat,
           NDArray out) {
   // TODO(zhejiang): add gpu op for edge_softmax
-  const auto& bcast = CalcBcastOff(op, ufeat, efeat);
-
   ATEN_XPU_SWITCH(graph->Context().device_type, XPU, "edge_softmax", {
     ATEN_ID_TYPE_SWITCH(graph->DataType(), IdType, {
       ATEN_FLOAT_BITS_SWITCH(out->dtype, bits, "edge_softmax out data", {
         Edge_softmax_csr_forward<XPU, IdType, bits>(
-          op, bcast, graph->GetCSCMatrix(0), ufeat, efeat, out);
+          graph->GetCSCMatrix(0), efeat, out);
       });
     });
   });
@@ -559,11 +555,9 @@ DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelSEGMENTMMBackwardB")
 DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelEdge_softmax_forward")
 .set_body([] (DGLArgs args, DGLRetValue* rv) {
     HeteroGraphRef graph = args[0];
-    const std::string op = args[1];
-    NDArray U = args[2];
-    NDArray E = args[3];
-    NDArray V = args[4];
-    Edge_softmax_forward(op, graph.sptr(), U, E, V);
+    NDArray efeat = args[1];
+    NDArray out = args[2];
+    Edge_softmax_forward(graph.sptr(), efeat, out);
 });
 
 DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelEdge_softmax_backward")

@@ -191,17 +191,12 @@ template void SpMMCsrHetero<kDGLCPU, int64_t, 64>(
 
 /*! \brief Edge_softmax_csr forward op on Csr format. */
 template <int XPU, typename IdType, int bits>
-void Edge_softmax_csr_forward(const std::string& op,
-             const BcastOff& bcast,
-             const CSRMatrix& csr,
-             NDArray ufeat,
+void Edge_softmax_csr_forward(const CSRMatrix& csr,
              NDArray efeat,
              NDArray out) {
   SWITCH_BITS(bits, DType, {
-      SWITCH_OP(op, Op, {
-        cpu::Edge_softmax_csr_forward<IdType, DType, Op>(bcast, csr, ufeat, efeat, out);
-      });
-    });
+      cpu::Edge_softmax_csr_forward<IdType, DType>(csr, efeat, out);
+  });
 }
 
 /*! \brief Edge_softmax_csr backward op on Csr format. */
@@ -220,29 +215,17 @@ void Edge_softmax_csr_backward(const std::string& op,
 }
 
 template void Edge_softmax_csr_forward<kDGLCPU, int32_t, 16>(
-    const std::string& op,
-    const BcastOff& bcast, const CSRMatrix& csr,
-    NDArray ufeat, NDArray efeat, NDArray out);
+    const CSRMatrix& csr, NDArray efeat, NDArray out);
 template void Edge_softmax_csr_forward<kDGLCPU, int64_t, 16>(
-    const std::string& op,
-    const BcastOff& bcast, const CSRMatrix& csr,
-    NDArray ufeat, NDArray efeat, NDArray out);
+    const CSRMatrix& csr, NDArray efeat, NDArray out);
 template void Edge_softmax_csr_forward<kDGLCPU, int32_t, 32>(
-    const std::string& op,
-    const BcastOff& bcast, const CSRMatrix& csr,
-    NDArray ufeat, NDArray efeat, NDArray out);
+    const CSRMatrix& csr, NDArray efeat, NDArray out);
 template void Edge_softmax_csr_forward<kDGLCPU, int64_t, 32>(
-    const std::string& op,
-    const BcastOff& bcast, const CSRMatrix& csr,
-    NDArray ufeat, NDArray efeat, NDArray out);
+    const CSRMatrix& csr, NDArray efeat, NDArray out);
 template void Edge_softmax_csr_forward<kDGLCPU, int32_t, 64>(
-    const std::string& op,
-    const BcastOff& bcast, const CSRMatrix& csr,
-    NDArray ufeat, NDArray efeat, NDArray out);
+    const CSRMatrix& csr, NDArray efeat, NDArray out);
 template void Edge_softmax_csr_forward<kDGLCPU, int64_t, 64>(
-    const std::string& op,
-    const BcastOff& bcast, const CSRMatrix& csr,
-    NDArray ufeat, NDArray efeat, NDArray out);
+    const CSRMatrix& csr, NDArray efeat, NDArray out);
 
 template void Edge_softmax_csr_backward<kDGLCPU, int32_t, 16>(
     const std::string& op,

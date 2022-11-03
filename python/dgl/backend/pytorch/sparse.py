@@ -690,7 +690,7 @@ class EdgeSoftmax(th.autograd.Function):
             score_sum = _gspmm(gidx, "copy_rhs", "sum", None, score)[0]
             out = _gsddmm(gidx, "div", score, score_sum, "e", "v")
         else:
-            out = _edge_softmax_forward(gidx, score, "copy_rhs")
+            out = _edge_softmax_forward(gidx, score)
         ctx.backward_cache = gidx
         ctx.save_for_backward(out)
         return out
