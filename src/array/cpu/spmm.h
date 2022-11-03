@@ -476,14 +476,13 @@ void SpMMCmpCoo(const BcastOff& bcast, const COOMatrix& coo, NDArray ufeat,
 
 
 /*!
- * \brief CPU kernel of Edge_softmax_csr_forward on Csr format.
- * \param csr The Csr matrix.
+ * \brief CPU kernel for forward EdgeSoftmaxCsr on CSR format.
+ * \param csr The CSR matrix.
  * \param efeat The feature on edges.
- * \param out The result of edge_softmax_forward.
+ * \param out The result of EdgeSoftmaxCsr.
  */
 template <typename IdType, typename DType>
-void Edge_softmax_csr_forward(const CSRMatrix& csr,
-                NDArray efeat, NDArray out) {
+void EdgeSoftmaxCsr(const CSRMatrix& csr, NDArray efeat, NDArray out) {
   const bool has_idx = !IsNullArray(csr.data);
   const IdType* indptr = static_cast<IdType*>(csr.indptr->data);
   const IdType* edges =
@@ -524,15 +523,15 @@ void Edge_softmax_csr_forward(const CSRMatrix& csr,
 
 
 /*!
- * \brief CPU kernel of Edge_softmax_csr_backward on Csr format.
+ * \brief CPU kernel of EdgeSoftmaxCsrBackward on CSR format.
  * \param csr The Csr matrix.
  * \param out The result of forward.
  * \param sds The result of gradiet * out.
- * \param back_out The result of edge_softmax_backward.
+ * \param back_out The result of EdgeSoftmaxCsrBackward.
  */
 template <typename IdType, typename DType>
-void Edge_softmax_csr_backward(const CSRMatrix& csr, NDArray out,
-                NDArray sds, NDArray back_out) {
+void EdgeSoftmaxCsrBackward(const CSRMatrix& csr, NDArray out,
+                            NDArray sds, NDArray back_out) {
   const bool has_idx = !IsNullArray(csr.data);
   const IdType* indptr = static_cast<IdType*>(csr.indptr->data);
   const IdType* edges =

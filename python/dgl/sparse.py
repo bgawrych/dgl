@@ -109,7 +109,7 @@ def _edge_softmax_backward(gidx, out, sds):
     This function does not support gpu op.
     """
     back_out = F.zeros_like(out)
-    _CAPI_DGLKernelEdge_softmax_backward(
+    _CAPI_DGLKernelEdgeSoftmaxBackward(
         gidx,
         to_dgl_nd(out),
         to_dgl_nd(sds),
@@ -142,7 +142,7 @@ def _edge_softmax_forward(gidx, e):
     else:
         expand = False
     myout = F.zeros_like(e)
-    _CAPI_DGLKernelEdge_softmax_forward(
+    _CAPI_DGLKernelEdgeSoftmaxForward(
         gidx, to_dgl_nd(e), to_dgl_nd_for_write(myout)
     )
     myout = F.squeeze(myout, -1) if expand else myout

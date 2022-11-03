@@ -189,51 +189,51 @@ template void SpMMCsrHetero<kDGLCPU, int64_t, 64>(
     const std::vector<dgl_type_t>& ufeat_node_tids,
     const std::vector<dgl_type_t>& out_node_tids);
 
-/*! \brief Edge_softmax_csr forward op on Csr format. */
+/*! \brief EdgeSoftmaxCsr forward op on CSR format. */
 template <int XPU, typename IdType, int bits>
-void Edge_softmax_csr_forward(const CSRMatrix& csr,
+void EdgeSoftmaxCsr(const CSRMatrix& csr,
              NDArray efeat,
              NDArray out) {
   SWITCH_BITS(bits, DType, {
-      cpu::Edge_softmax_csr_forward<IdType, DType>(csr, efeat, out);
+      cpu::EdgeSoftmaxCsr<IdType, DType>(csr, efeat, out);
   });
 }
 
-/*! \brief Edge_softmax_csr backward op on Csr format. */
+/*! \brief EdgeSoftmaxCsr backward op on CSR format. */
 template <int XPU, typename IdType, int bits>
-void Edge_softmax_csr_backward(const CSRMatrix& csr,
+void EdgeSoftmaxCsrBackward(const CSRMatrix& csr,
              NDArray out,
              NDArray sds,
              NDArray back_out) {
   SWITCH_BITS(bits, DType, {
-      cpu::Edge_softmax_csr_backward<IdType, DType>(csr, out, sds, back_out);
+      cpu::EdgeSoftmaxCsrBackward<IdType, DType>(csr, out, sds, back_out);
   });
 }
 
-template void Edge_softmax_csr_forward<kDGLCPU, int32_t, 16>(
+template void EdgeSoftmaxCsr<kDGLCPU, int32_t, 16>(
     const CSRMatrix& csr, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_forward<kDGLCPU, int64_t, 16>(
+template void EdgeSoftmaxCsr<kDGLCPU, int64_t, 16>(
     const CSRMatrix& csr, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_forward<kDGLCPU, int32_t, 32>(
+template void EdgeSoftmaxCsr<kDGLCPU, int32_t, 32>(
     const CSRMatrix& csr, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_forward<kDGLCPU, int64_t, 32>(
+template void EdgeSoftmaxCsr<kDGLCPU, int64_t, 32>(
     const CSRMatrix& csr, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_forward<kDGLCPU, int32_t, 64>(
+template void EdgeSoftmaxCsr<kDGLCPU, int32_t, 64>(
     const CSRMatrix& csr, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_forward<kDGLCPU, int64_t, 64>(
+template void EdgeSoftmaxCsr<kDGLCPU, int64_t, 64>(
     const CSRMatrix& csr, NDArray efeat, NDArray out);
 
-template void Edge_softmax_csr_backward<kDGLCPU, int32_t, 16>(
+template void EdgeSoftmaxCsrBackward<kDGLCPU, int32_t, 16>(
     const CSRMatrix& csr, NDArray ufeat, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_backward<kDGLCPU, int64_t, 16>(
+template void EdgeSoftmaxCsrBackward<kDGLCPU, int64_t, 16>(
     const CSRMatrix& csr, NDArray ufeat, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_backward<kDGLCPU, int32_t, 32>(
+template void EdgeSoftmaxCsrBackward<kDGLCPU, int32_t, 32>(
     const CSRMatrix& csr, NDArray ufeat, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_backward<kDGLCPU, int64_t, 32>(
+template void EdgeSoftmaxCsrBackward<kDGLCPU, int64_t, 32>(
     const CSRMatrix& csr, NDArray ufeat, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_backward<kDGLCPU, int32_t, 64>(
+template void EdgeSoftmaxCsrBackward<kDGLCPU, int32_t, 64>(
     const CSRMatrix& csr, NDArray ufeat, NDArray efeat, NDArray out);
-template void Edge_softmax_csr_backward<kDGLCPU, int64_t, 64>(
+template void EdgeSoftmaxCsrBackward<kDGLCPU, int64_t, 64>(
     const CSRMatrix& csr, NDArray ufeat, NDArray efeat, NDArray out);
 
 /*! \brief Generalized SpMM on Coo format. */

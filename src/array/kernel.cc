@@ -322,15 +322,15 @@ void SDDMMHetero(const std::string& op,
 }
 
 
-/*! \brief Generalized Edge_softmax op for forward */
-void Edge_softmax_forward(HeteroGraphPtr graph,
+/*! \brief Generalized EdgeSoftmax op for forward */
+void EdgeSoftmax(HeteroGraphPtr graph,
           NDArray efeat,
           NDArray out) {
   // TODO(zhejiang): add gpu op for edge_softmax
   ATEN_XPU_SWITCH(graph->Context().device_type, XPU, "edge_softmax", {
     ATEN_ID_TYPE_SWITCH(graph->DataType(), IdType, {
       ATEN_FLOAT_BITS_SWITCH(out->dtype, bits, "edge_softmax out data", {
-        Edge_softmax_csr_forward<XPU, IdType, bits>(
+        EdgeSoftmaxCsr<XPU, IdType, bits>(
           graph->GetCSCMatrix(0), efeat, out);
       });
     });
@@ -338,8 +338,8 @@ void Edge_softmax_forward(HeteroGraphPtr graph,
 }
 
 
-/*! \brief Generalized Edge_softmax op for backward */
-void Edge_softmax_backward(HeteroGraphPtr graph,
+/*! \brief Generalized EdgeSoftmax op for backward */
+void EdgeSoftmaxBackward(HeteroGraphPtr graph,
           NDArray out,
           NDArray sds,
           NDArray back_out) {
@@ -348,7 +348,7 @@ void Edge_softmax_backward(HeteroGraphPtr graph,
   ATEN_XPU_SWITCH(graph->Context().device_type, XPU, "edge_softmax_back", {
     ATEN_ID_TYPE_SWITCH(graph->DataType(), IdType, {
       ATEN_FLOAT_BITS_SWITCH(out->dtype, bits, "edge_softmax out data_back", {
-        Edge_softmax_csr_backward<XPU, IdType, bits>(
+        EdgeSoftmaxCsrBackward<XPU, IdType, bits>(
           graph->GetCSCMatrix(0), out, sds, back_out);
       });
     });
@@ -549,21 +549,21 @@ DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelSEGMENTMMBackwardB")
     SegmentMMBackwardB(A, dC, dB, seglen);
   });
 
-DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelEdge_softmax_forward")
+DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelEdgeSoftmaxForward")
 .set_body([] (DGLArgs args, DGLRetValue* rv) {
     HeteroGraphRef graph = args[0];
     NDArray efeat = args[1];
     NDArray out = args[2];
-    Edge_softmax_forward(graph.sptr(), efeat, out);
+    EdgeSoftmax(graph.sptr(), efeat, out);
 });
 
-DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelEdge_softmax_backward")
+DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelEdgeSoftmaxBackward")
 .set_body([] (DGLArgs args, DGLRetValue* rv) {
     HeteroGraphRef graph = args[0];
     NDArray out = args[1];
     NDArray sds = args[2];
     NDArray back_out = args[3];
-    Edge_softmax_backward(graph.sptr(), out, sds, back_out);
+    EdgeSoftmaxBackward(graph.sptr(), out, sds, back_out);
 });
 
 DGL_REGISTER_GLOBAL("sparse._CAPI_DGLKernelSpMMHetero")

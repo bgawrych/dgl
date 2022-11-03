@@ -221,17 +221,17 @@ std::pair<CSRMatrix, NDArray> CSRSum(
     const std::vector<NDArray>& A_weights);
 
 /*!
- * \brief Edge_softmax_csr forward function on Csr format.
+ * \brief EdgeSoftmaxCsr forward function on CSR format.
  */
 template <int XPU, typename IdType, int bits>
-void Edge_softmax_csr_forward(const aten::CSRMatrix& csr,
+void EdgeSoftmaxCsr(const aten::CSRMatrix& csr,
              NDArray efeat,
              NDArray out);
 /*!
- * \brief Edge_softmax_csr backward function on Csr format.
+ * \brief EdgeSoftmaxCsr backward function on CSR format.
  */
 template <int XPU, typename IdType, int bits>
-void Edge_softmax_csr_backward(const aten::CSRMatrix& csr,
+void EdgeSoftmaxCsrBackward(const aten::CSRMatrix& csr,
              NDArray ufeat,
              NDArray efeat,
              NDArray out);
