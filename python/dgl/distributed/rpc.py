@@ -1117,6 +1117,7 @@ def finalize_server():
     print("Server (%d) shutdown." % get_rank())
 
 
+@profile
 def fast_pull(
     name,
     id_tensor,

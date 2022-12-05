@@ -35,6 +35,7 @@ def get_sampler_pool():
     return SAMPLER_POOL, NUM_SAMPLER_WORKERS
 
 
+@profile
 def _init_rpc(
     ip_config,
     num_servers,
@@ -71,6 +72,7 @@ class MpCommand(Enum):
     FINALIZE_POOL = 6
 
 
+@profile
 def init_process(rpc_config, mp_contexts):
     """Work loop in the worker"""
     try:

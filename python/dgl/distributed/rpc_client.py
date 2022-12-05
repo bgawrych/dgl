@@ -109,6 +109,7 @@ def get_local_usable_addr(probe_addr):
     return ip_addr + ":" + str(port)
 
 
+@profile
 def connect_to_server(
     ip_config,
     num_servers,

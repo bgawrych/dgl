@@ -46,6 +46,7 @@ class NeighborSampler(object):
         self.device = device
         self.load_feat = load_feat
 
+    @profile
     def sample_blocks(self, seeds):
         seeds = th.LongTensor(np.asarray(seeds))
         blocks = []

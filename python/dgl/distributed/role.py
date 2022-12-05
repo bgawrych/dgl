@@ -123,6 +123,7 @@ CUR_ROLE = None
 IS_STANDALONE = False
 
 
+@profile
 def init_role(role):
     """Initialize the role of the current process.
 
