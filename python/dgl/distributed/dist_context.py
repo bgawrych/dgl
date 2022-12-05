@@ -35,6 +35,7 @@ def get_sampler_pool():
     return SAMPLER_POOL, NUM_SAMPLER_WORKERS
 
 
+@profile
 def _init_rpc(
     ip_config,
     num_servers,

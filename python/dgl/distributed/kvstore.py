@@ -849,6 +849,7 @@ class KVClient(object):
     role : str
         We can set different role for kvstore.
     """
+    @profile
     def __init__(self, ip_config, num_servers, role='default'):
         assert rpc.get_rank() != -1, \
                 'Please invoke rpc.connect_to_server() before creating KVClient.'
@@ -1281,6 +1282,7 @@ class KVClient(object):
         if local_id is not None: # local push
             self._push_handlers[name](self._data_store, name, local_id, local_data)
 
+    @profile
     def pull(self, name, id_tensor):
         """Pull message from KVServer.
 
