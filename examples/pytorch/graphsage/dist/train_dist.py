@@ -343,6 +343,7 @@ def run(args, device, data):
             )
 
 
+@profile
 def main(args):
     print(socket.gethostname(), "Initializing DGL dist")
     dgl.distributed.initialize(args.ip_config, net_type=args.net_type)
