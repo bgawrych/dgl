@@ -361,6 +361,7 @@ def invoke_gspmm(
     return {rfunc.out_field: z}
 
 
+@profile
 def message_passing(g, mfunc, rfunc, afunc):
     """Invoke message passing computation on the whole graph.
 

@@ -176,6 +176,7 @@ class SAGEConv(nn.Module):
         _, (rst, _) = self.lstm(m, h)
         return {'neigh': rst.squeeze(0)}
 
+    @profile
     def forward(self, graph, feat, edge_weight=None):
         r"""
 

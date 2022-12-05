@@ -4796,6 +4796,7 @@ class DGLHeteroGraph(object):
         edges = self.out_edges(u, form='eid', etype=etype)
         self.send_and_recv(edges, message_func, reduce_func, apply_node_func, etype=etype)
 
+    @profile
     def update_all(self,
                    message_func,
                    reduce_func,

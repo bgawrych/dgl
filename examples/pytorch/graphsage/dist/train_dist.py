@@ -26,6 +26,7 @@ from dgl.data.utils import load_graphs
 from dgl.distributed import DistDataLoader
 
 
+@profile
 def load_subtensor(g, seeds, input_nodes, device, load_feat=True):
     """
     Copys features and labels of a set of nodes onto GPU.
@@ -87,6 +88,7 @@ class DistSAGE(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.activation = activation
 
+    @profile
     def forward(self, blocks, x):
         h = x
         for l, (layer, block) in enumerate(zip(self.layers, blocks)):
@@ -192,6 +194,7 @@ def evaluate(model, g, inputs, labels, val_nid, test_nid, batch_size, device):
     )
 
 
+@profile
 def run(args, device, data):
     # Unpack data
     train_nid, val_nid, test_nid, in_feats, n_classes, g = data
