@@ -209,6 +209,7 @@ class CustomPool:
             self.process_list[i].join()
 
 
+@profile
 def initialize(
     ip_config,
     max_queue_size=MAX_QUEUE_SIZE,
