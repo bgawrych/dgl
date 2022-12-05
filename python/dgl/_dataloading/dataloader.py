@@ -550,6 +550,7 @@ class NodeCollator(Collator):
     def dataset(self):
         return self._dataset
 
+    @profile
     def collate(self, items):
         """Find the list of MFGs necessary for computing the representation of given
         nodes for a node classification/regression task.

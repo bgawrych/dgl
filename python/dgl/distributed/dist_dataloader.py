@@ -106,6 +106,7 @@ class DistDataLoader:
         if self.pool is not None:
             self.pool.delete_collate_fn(self.name)
 
+    @profile
     def __next__(self):
         if self.pool is None:
             num_reqs = 1
@@ -137,6 +138,7 @@ class DistDataLoader:
         self.num_pending = 0
         return self
 
+    @profile
     def _request_next_batch(self):
         next_data = self._next_data()
         if next_data is None:
