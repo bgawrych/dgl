@@ -8,6 +8,7 @@ from . import rpc
 from .constants import MAX_QUEUE_SIZE, SERVER_EXIT, SERVER_KEEP_ALIVE
 
 
+@profile
 def start_server(
     server_id,
     ip_config,
