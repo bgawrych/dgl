@@ -198,12 +198,15 @@ class NodeDataView(MutableMapping):
     def _get_names(self):
         return list(self._data.keys())
 
+    @profile
     def __getitem__(self, key):
         return self._data[key]
 
+    @profile
     def __setitem__(self, key, val):
         self._data[key] = val
 
+    @profile
     def __delitem__(self, key):
         del self._data[key]
 
@@ -252,12 +255,15 @@ class EdgeDataView(MutableMapping):
     def _get_names(self):
         return list(self._data.keys())
 
+    @profile
     def __getitem__(self, key):
         return self._data[key]
 
+    @profile
     def __setitem__(self, key, val):
         self._data[key] = val
 
+    @profile
     def __delitem__(self, key):
         del self._data[key]
 
@@ -481,6 +487,7 @@ class DistGraph:
     set of machines. If users need to run them on different sets of machines, it requires
     manually setting up servers and trainers. The setup is not fully tested yet.
     '''
+    @profile
     def __init__(self, graph_name, gpb=None, part_config=None):
         self.graph_name = graph_name
         if os.environ.get('DGL_DIST_MODE', 'standalone') == 'standalone':
@@ -535,6 +542,7 @@ class DistGraph:
         self._ntype_map = {ntype:i for i, ntype in enumerate(self.ntypes)}
         self._etype_map = {etype:i for i, etype in enumerate(self.canonical_etypes)}
 
+    @profile
     def _init(self, gpb):
         self._client = get_kvstore()
         assert self._client is not None, \
@@ -544,6 +552,50 @@ class DistGraph:
         if self._gpb is None:
             self._gpb = gpb
         self._client.map_shared_data(self._gpb)
+
+    @profile
+    def _init_ndata_store(self):
+        '''Initialize node data store.'''
+        self._ndata_store = {}
+        for ntype in self.ntypes:
+            names = self._get_ndata_names(ntype)
+            data = {}
+            for name in names:
+                assert name.is_node()
+                policy = PartitionPolicy(name.policy_str,
+                    self.get_partition_book()
+                )
+                dtype, shape, _ = self._client.get_data_meta(str(name))
+                # We create a wrapper on the existing tensor in the kvstore.
+                data[name.get_name()] = DistTensor(shape, dtype,
+                    name.get_name(), part_policy=policy, attach=False
+                )
+            if len(self.ntypes) == 1:
+                self._ndata_store = data
+            else:
+                self._ndata_store[ntype] = data
+
+    @profile
+    def _init_edata_store(self):
+        '''Initialize edge data store.'''
+        self._edata_store = {}
+        for etype in self.canonical_etypes:
+            names = self._get_edata_names(etype)
+            data = {}
+            for name in names:
+                assert name.is_edge()
+                policy = PartitionPolicy(name.policy_str,
+                    self.get_partition_book()
+                )
+                dtype, shape, _ = self._client.get_data_meta(str(name))
+                # We create a wrapper on the existing tensor in the kvstore.
+                data[name.get_name()] = DistTensor(shape, dtype,
+                    name.get_name(), part_policy=policy, attach=False
+                )
+            if len(self.canonical_etypes) == 1:
+                self._edata_store = data
+            else:
+                self._edata_store[etype] = data
 
     def __getstate__(self):
         return self.graph_name, self._gpb
@@ -1212,6 +1264,7 @@ class DistGraph:
         '''
         self._client.barrier()
 
+    @profile
     def sample_neighbors(self, seed_nodes, fanout, edge_dir='in', prob=None,
                          exclude_edges=None, replace=False, etype_sorted=True,
                          output_device=None):
