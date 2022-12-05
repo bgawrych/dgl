@@ -137,6 +137,7 @@ class DistDataLoader:
         self.num_pending = 0
         return self
 
+    @profile
     def _request_next_batch(self):
         next_data = self._next_data()
         if next_data is None:

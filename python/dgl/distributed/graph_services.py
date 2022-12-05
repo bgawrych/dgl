@@ -64,6 +64,7 @@ class FindEdgeResponse(Response):
         return self.global_src, self.global_dst, self.order_id
 
 
+@profile
 def _sample_neighbors(
     local_g, partition_book, seed_nodes, fan_out, edge_dir, prob, replace
 ):
@@ -462,6 +463,7 @@ LocalSampledGraph = namedtuple(
 )
 
 
+@profile
 def _distributed_access(g, nodes, issue_remote_req, local_access):
     """A routine that fetches local neighborhood of nodes from the distributed graph.
 
@@ -719,6 +721,7 @@ def sample_etype_neighbors(
         return frontier
 
 
+@profile
 def sample_neighbors(g, nodes, fanout, edge_dir="in", prob=None, replace=False):
     """Sample from the neighbors of the given nodes from a distributed graph.
 
