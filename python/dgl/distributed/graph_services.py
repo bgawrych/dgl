@@ -236,6 +236,7 @@ class SamplingRequest(Request):
             self.fan_out,
         )
 
+    @profile
     def process_request(self, server_state):
         local_g = server_state.graph
         partition_book = server_state.partition_book

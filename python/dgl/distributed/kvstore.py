@@ -55,6 +55,7 @@ class PullRequest(rpc.Request):
     def __setstate__(self, state):
         self.name, self.id_tensor = state
 
+    @profile
     def process_request(self, server_state):
         kv_store = server_state.kv_store
         if self.name not in kv_store.part_policy:

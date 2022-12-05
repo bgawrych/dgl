@@ -296,6 +296,7 @@ class DistGraphServer(KVServer):
     net_type : str
         Backend rpc type: ``'socket'`` or ``'tensorpipe'``
     '''
+    @profile
     def __init__(self, server_id, ip_config, num_servers,
                  num_clients, part_config, disable_shared_mem=False,
                  graph_format=('csc', 'coo'), keep_alive=False,
@@ -374,6 +375,7 @@ class DistGraphServer(KVServer):
             del edge_feats
             gc.collect()
 
+    @profile
     def start(self):
         """ Start graph store server.
         """
