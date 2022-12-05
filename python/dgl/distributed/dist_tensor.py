@@ -104,6 +104,7 @@ class DistTensor:
     create a ``DistTensor`` object, the creation succeeds only when all trainer processes
     do the same.
     '''
+    @profile
     def __init__(self, shape, dtype, name=None, init_func=None, part_policy=None,
                  persistent=False, is_gdata=True, attach=True):
         self.kvstore = get_kvstore()
@@ -170,11 +171,13 @@ class DistTensor:
         if not self._persistent and self._owner and initialized:
             self.kvstore.delete_data(self._name)
 
+    @profile
     def __getitem__(self, idx):
         idx = utils.toindex(idx)
         idx = idx.tousertensor()
         return self.kvstore.pull(name=self._name, id_tensor=idx)
 
+    @profile
     def __setitem__(self, idx, val):
         idx = utils.toindex(idx)
         idx = idx.tousertensor()
