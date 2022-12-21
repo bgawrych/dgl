@@ -3,7 +3,28 @@ The ``dgl`` package contains data structure for storing structural and feature d
 (i.e., the :class:`DGLGraph` class) and also utilities for generating, manipulating
 and transforming graphs.
 """
+import builtins
+import line_profiler
+prof = line_profiler.LineProfiler()
+builtins.__dict__['profile'] = prof
 
+import atexit
+
+def exit_handler():
+    import random
+    import os
+    print("Killing DGL")
+    r = os.environ.get("DGL_ROLE")
+    s = socket.gethostname()
+    out = f"{r}_{s}_{random.randint(1000,9999)}.lprof"
+    if prof:
+       prof.dump_stats(f"/home/ubuntu/{out}")
+    elif builtins.__dict__['profile']:
+        builtins.__dict__['profile'].dump_stats(f"/home/ubuntu/{out}")
+    else:
+        print("\n\nSOMETHING WENT WRONG WITH PROFILING\n\n")
+
+atexit.register(exit_handler)
 
 # Windows compatibility
 # This initializes Winsock and performs cleanup at termination as required
